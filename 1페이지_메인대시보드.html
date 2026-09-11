@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>화학물질 변경이력 조회</title>
+<link rel="stylesheet" href="common.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header>
+      <div class="header-left">
+        <div class="logo-wrap">
+          <img id="logo-img" src="logo.png" alt="SP SAMHWA"
+               onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';">
+          <div class="logo-fallback" id="logo-fallback">SP SAMHWA</div>
+        </div>
+        <div class="page-title">화학물질 변경이력 조회</div>
+      </div>
+      <div class="header-right">
+        <div class="user-badge" id="header-user">
+          <div class="user-avatar">
+            <img src="user-photo.png" alt="홍길동"
+                 onerror="this.replaceWith(document.createTextNode('홍'));">
+          </div>
+          <div class="user-text">
+            <div class="user-team">품질경영팀</div>
+            <div class="user-name">홍길동 프로</div>
+          </div>
+        </div>
+        <div class="header-clock" id="header-clock"></div>
+      </div>
+    </header>
+
+    <div class="app-body">
+      <nav class="sidebar">
+        <div class="sidebar-label">MENU</div>
+        <a href="1페이지_메인대시보드.html" class="active">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 3"/></svg></span>변경이력 조회
+        </a>
+        <a href="2페이지_CASNo_DB조회.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6"/><path d="M10 3v6l-5.5 9.5A1.5 1.5 0 0 0 5.8 21h12.4a1.5 1.5 0 0 0 1.3-2.5L14 9V3"/></svg></span>CAS No. DB 조회
+        </a>
+        <a href="3페이지_재료_DB조회.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8 12 3 3 8l9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></span>재료 DB 조회
+        </a>
+        <a href="4페이지_제품_DB조회.html">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10 12.5 2.5 3 3l.5 9.5L11 20a2 2 0 0 0 2.8 0L20 13.8a2 2 0 0 0 0-2.8Z"/><circle cx="8.5" cy="7.5" r="1.5"/></svg></span>제품 DB 조회
+        </a>
+      </nav>
+
+      <main>
+        <div class="columns" id="columns"></div>
+      </main>
+    </div>
+  </div>
+
+  <script src="common.js"></script>
+  <script>
+    // ---------- Mock 데이터 (변경일자는 오늘 기준 상대일수로 생성 → 실행할 때마다 카운팅이 실제로 동작) ----------
+    const DB_TYPES = [
+      {
+        key: 'cas', cls: 'cas', title: 'CAS No. DB 변경이력', shortName: 'CAS No.',
+        columns: ['CAS NO.', '화학물질명', '등록일자', '변경일자'],
+        offsets: [0, 3, 18, 35, 60, 95, 130, 170, 210, 260],
+        names: ['64-17-5 · 에탄올', '67-56-1 · 메탄올', '7732-18-5 · 정제수', '7647-14-5 · 염화나트륨',
+                '9004-32-4 · 카르복시메틸셀룰로오스', '57-55-6 · 프로필렌글리콜', '9005-64-5 · 폴리소르베이트 80',
+                '112-34-5 · 디에틸렌글리콜모노부틸에테르', '77-92-9 · 시트르산', '56-81-5 · 글리세린']
+      },
+      {
+        key: 'material', cls: 'material', title: '재료 DB 변경이력', shortName: '재료',
+        columns: ['재료코드', '재료규격', '등록일자', '변경일자'],
+        offsets: [1, 6, 22, 40, 70, 100, 140, 180, 220, 270],
+        names: ['MAT-1023 · PE 필름 0.05T', 'MAT-1187 · PP 용기 500ml', 'MAT-2041 · 알루미늄 캡',
+                'MAT-3355 · 라벨지(감열)', 'MAT-4410 · 펌프 디스펜서 20mm', 'MAT-2278 · 유리병 100ml',
+                'MAT-5502 · 박스(골판지 3겹)', 'MAT-1874 · PET 보틀 250ml', 'MAT-3399 · 실리콘 마개', 'MAT-4001 · 수축 필름']
+      },
+      {
+        key: 'product', cls: 'product', title: '제품 DB 변경이력', shortName: '제품',
+        columns: ['제품코드', '제품명', '등록일자', '변경일자'],
+        offsets: [0, 9, 25, 55, 85, 120, 160, 200, 240, 290],
+        names: ['PRD-0012 · 수분크림 100ml', 'PRD-0034 · 토너 150ml', 'PRD-0057 · 선크림 50ml',
+                'PRD-0088 · 클렌징폼 120g', 'PRD-0102 · 에센스 30ml', 'PRD-0119 · 바디로션 300ml',
+                'PRD-0143 · 샴푸 400ml', 'PRD-0156 · 헤어에센스 80ml', 'PRD-0177 · 핸드크림 50ml', 'PRD-0198 · 립밤 5g']
+      }
+    ];
+
+    const COLOR_MAP = { cas: '#3b82f6', material: '#10b981', product: '#f59e0b' };
+
+    // 1월~12월 고정 (올해 기준). 아직 도래하지 않은 미래 월은 isFuture=true로 표시하여 그래프를 그리지 않음
+    const MONTHLY_WINDOW = Array.from({ length: 12 }, (_, i) => {
+      const month = i + 1;
+      return { year: todayYear, month, label: `${month}월`, isFuture: month > todayMonth };
+    });
+
+    // 월별 집계: 중단 변경이력(rows)과 동일한 데이터로 히스토그램 연동
+    function monthlyAggregate(rows) {
+      return MONTHLY_WINDOW.map(({ year, month, label, isFuture }) => {
+        const count = isFuture ? 0 : rows.filter(r => {
+          const [y, m] = r[3].split('-').map(Number);
+          return y === year && m === month;
+        }).length;
+        return { label, count, isFuture };
+      });
+    }
+
+    // 등록일자는 변경일자보다 항상 이전으로 임의 생성
+    function buildRows(db) {
+      return db.offsets.map((off, i) => {
+        const changedDate = daysAgo(off);
+        const registeredDate = daysAgo(off + 200 + i * 15);
+        const [code, name] = db.names[i].split(' · ');
+        return [code, name, registeredDate, changedDate];
+      });
+    }
+
+    // ---------- 카운팅 규칙 ----------
+    // 일일: 변경일자 == 오늘 / 월간: 변경일자의 연·월 == 오늘의 연·월 / 연간: 변경일자의 연 == 오늘의 연
+    function countStats(rows) {
+      let daily = 0, monthly = 0, yearly = 0;
+      rows.forEach(r => {
+        const changed = r[3];
+        const [y, m] = changed.split('-').map(Number);
+        if (changed === todayISO) daily++;
+        if (y === todayYear && m === todayMonth) monthly++;
+        if (y === todayYear) yearly++;
+      });
+      return { daily, monthly, yearly };
+    }
+
+    // "보기 좋은" 눈금 최댓값 계산 (1/2/5 x 10^n 단위)
+    function niceCeil(v) {
+      if (v <= 5) return 5;
+      const magnitude = Math.pow(10, Math.floor(Math.log10(v)));
+      const residual = v / magnitude;
+      let niceResidual = 10;
+      if (residual <= 1) niceResidual = 1;
+      else if (residual <= 2) niceResidual = 2;
+      else if (residual <= 5) niceResidual = 5;
+      return niceResidual * magnitude;
+    }
+
+    // ---------- 순수 SVG 콤보 차트(막대+꺾은선), 외부 라이브러리 미사용 ----------
+    // buckets: [{label, count, isFuture}, ...] - 중단 변경이력과 동일 데이터로 집계된 값
+    function comboChartSvg(buckets, color) {
+      const width = 360, height = 200;
+      const pad = { top: 22, right: 12, bottom: 22, left: 30 };
+      const chartW = width - pad.left - pad.right;
+      const chartH = height - pad.top - pad.bottom;
+      const data = buckets.map(b => b.count);
+      const rawMax = Math.max(...data, 1);
+      const scaleMax = niceCeil(rawMax * 1.2);
+      const tickCount = 4;
+      const step = chartW / data.length;
+      const barW = step * 0.5;
+      const yOf = v => pad.top + chartH - (v / scaleMax) * chartH;
+
+      // 틀(테두리)
+      const frame = `<rect x="${pad.left}" y="${pad.top}" width="${chartW}" height="${chartH}" fill="none" stroke="#d8dee8" stroke-width="1"/>`;
+
+      // 좌측 눈금 + 가로 그리드선
+      let gridlines = '', tickLabels = '';
+      for (let i = 0; i <= tickCount; i++) {
+        const val = Math.round((scaleMax / tickCount) * i);
+        const y = yOf(val);
+        gridlines += `<line x1="${pad.left}" y1="${y.toFixed(1)}" x2="${pad.left + chartW}" y2="${y.toFixed(1)}" stroke="#eef1f6" stroke-width="1"/>`;
+        tickLabels += `<text x="${pad.left - 6}" y="${(y + 3).toFixed(1)}" font-size="8.5" fill="#98a1b3" text-anchor="end">${val}</text>`;
+      }
+
+      // 막대 + 꺾은선 + 값 라벨 (미래 월은 데이터가 없으므로 아예 그리지 않음)
+      let bars = '', points = [], valueLabels = '';
+      buckets.forEach((b, i) => {
+        if (b.isFuture) return;
+        const v = b.count;
+        const barH = (v / scaleMax) * chartH;
+        const x = pad.left + step * i + (step - barW) / 2;
+        const y = pad.top + (chartH - barH);
+        bars += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${barH.toFixed(1)}" rx="3" fill="${color}" fill-opacity="0.30"/>`;
+        const cx = pad.left + step * i + step / 2;
+        const cy = yOf(v);
+        points.push([cx, cy]);
+        if (v > 0) {
+          valueLabels += `<text x="${cx.toFixed(1)}" y="${(cy - 7).toFixed(1)}" font-size="9" font-weight="700" fill="${color}" text-anchor="middle">${v}</text>`;
+        }
+      });
+
+      const linePath = points.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+      const dots = points.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.6" fill="${color}"/>`).join('');
+      const monthLabels = buckets.map((b, i) => {
+        const x = pad.left + step * i + step / 2;
+        return `<text x="${x.toFixed(1)}" y="${height - 6}" font-size="8.5" fill="${b.isFuture ? '#c7ccd6' : '#6b7385'}" text-anchor="middle">${b.label}</text>`;
+      }).join('');
+
+      return `<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+        ${gridlines}
+        ${frame}
+        ${tickLabels}
+        ${bars}
+        <path d="${linePath}" fill="none" stroke="${color}" stroke-width="2"/>
+        ${dots}
+        ${valueLabels}
+        ${monthLabels}
+      </svg>`;
+    }
+
+    // ---------- 렌더링 ----------
+    const columnsEl = document.getElementById('columns');
+
+    DB_TYPES.forEach(db => {
+      const rows = buildRows(db).sort((a, b) => (a[3] < b[3] ? 1 : -1));
+      const { daily, monthly, yearly } = countStats(rows);
+
+      const section = document.createElement('section');
+      section.className = `db-column ${db.cls}`;
+
+      const rowsHtml = rows.map(r => `
+        <tr>${r.map((cell, i) => `<td class="${i === 3 ? 'changed' : ''}">${cell}</td>`).join('')}</tr>
+      `).join('');
+
+      section.innerHTML = `
+        <div class="column-title"><span class="dot"></span>${db.title}</div>
+
+        <div class="summary-row">
+          <div class="summary-item">
+            <div class="summary-icon">${iconHtml('daily')}</div>
+            <div><div class="summary-value">${daily.toLocaleString()}건</div><div class="summary-label">일일현황</div></div>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="summary-item">
+            <div class="summary-icon">${iconHtml('monthly')}</div>
+            <div><div class="summary-value">${monthly.toLocaleString()}건</div><div class="summary-label">월간현황</div></div>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="summary-item">
+            <div class="summary-icon">${iconHtml('yearly')}</div>
+            <div><div class="summary-value">${yearly.toLocaleString()}건</div><div class="summary-label">연간현황</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>최근 변경 이력 (10건)</h3>
+            <button class="more-btn" data-target="${db.key}">더보기 ›</button>
+          </div>
+          <table>
+            <thead><tr>${db.columns.map(c => `<th>${c}</th>`).join('')}</tr></thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-header"><h3>월 누적 ${db.shortName} 변경이력</h3></div>
+          ${comboChartSvg(monthlyAggregate(rows), COLOR_MAP[db.key])}
+        </div>
+      `;
+
+      columnsEl.appendChild(section);
+    });
+
+    wireIconFallbacks();
+
+    const MORE_BTN_PAGE = { cas: '2페이지_CASNo_DB조회.html', material: '3페이지_재료_DB조회.html', product: '4페이지_제품_DB조회.html' };
+    const MORE_BTN_READY = { cas: true, material: false, product: false };
+
+    document.querySelectorAll('.more-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.target;
+        if (MORE_BTN_READY[key]) {
+          location.href = MORE_BTN_PAGE[key];
+        } else {
+          alert('해당 상세 페이지는 추후 구축 예정입니다.');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
