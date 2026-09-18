@@ -2,10 +2,154 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0; url=1페이지_메인대시보드.html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>화학물질 변경이력 조회</title>
+<style>
+  @font-face {
+    font-family: 'Pretendard Variable';
+    font-weight: 45 920;
+    font-style: normal;
+    font-display: swap;
+    src: url('fonts/PretendardVariable.woff2') format('woff2-variations');
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: #f3f5f9;
+    font-family: "Pretendard Variable", "Pretendard", "Segoe UI", "Malgun Gothic", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  #pin-gate {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .pin-box {
+    width: 100%;
+    max-width: 340px;
+    background: #ffffff;
+    border: 1px solid #e5e9f0;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(15, 43, 82, 0.12);
+    padding: 36px 30px;
+    text-align: center;
+  }
+  .pin-title { font-size: 18px; font-weight: 800; letter-spacing: -0.2px; color: #0f2b52; }
+  .pin-sub { margin-top: 8px; font-size: 13px; color: #6b7385; }
+  .pin-input {
+    margin-top: 24px;
+    width: 100%;
+    text-align: center;
+    font-size: 26px;
+    letter-spacing: 12px;
+    padding: 12px 0;
+    border: 1px solid #e5e9f0;
+    border-radius: 10px;
+    background: #f3f5f9;
+    color: #1a2233;
+    font-family: inherit;
+  }
+  .pin-input:focus { outline: none; border-color: #3b82f6; background: #ffffff; }
+  .pin-submit {
+    margin-top: 14px;
+    width: 100%;
+    padding: 12px 0;
+    border: none;
+    border-radius: 10px;
+    background: #0f2b52;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14.5px;
+    cursor: pointer;
+  }
+  .pin-submit:hover { background: #16345f; }
+  .pin-error {
+    margin-top: 14px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #dc2626;
+  }
+  .pin-note {
+    margin-top: 20px;
+    font-size: 11px;
+    color: #98a1b3;
+    line-height: 1.5;
+  }
+</style>
 </head>
 <body>
-  <p><a href="1페이지_메인대시보드.html">화학물질 변경이력 조회로 이동</a></p>
+  <div id="pin-gate">
+    <div class="pin-box">
+      <div class="pin-title">화학물질 변경이력 조회</div>
+      <div class="pin-sub">접속하려면 PIN 번호 4자리를 입력하세요</div>
+      <input type="password" id="pin-input" class="pin-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off">
+      <button type="button" id="pin-submit" class="pin-submit">확인</button>
+      <div id="pin-error" class="pin-error" hidden></div>
+      <div class="pin-note">본 PIN 화면은 정적 페이지의 가벼운 접근 차단용이며, 완전한 보안 인증을 대체하지 않습니다.</div>
+    </div>
+  </div>
+
+  <script>
+    // SHA-256("1946") — PIN 원문은 코드에 저장하지 않고 해시로만 비교
+    const PIN_HASH = '8ba5ef4e282bf7bc5cf13f731a1b9f525bd3b1f69cbfa24c1c69c303c0ac7019';
+    const SESSION_KEY = 'chemChangeHistoryPinVerified';
+    const ENTRY_PAGE = '1페이지_메인대시보드.html';
+
+    function goToApp() {
+      location.replace(ENTRY_PAGE);
+    }
+
+    async function sha256Hex(text) {
+      const data = new TextEncoder().encode(text);
+      const digest = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    if (sessionStorage.getItem(SESSION_KEY) === 'true') {
+      goToApp();
+    } else {
+      const input = document.getElementById('pin-input');
+      const submitBtn = document.getElementById('pin-submit');
+      const errorEl = document.getElementById('pin-error');
+
+      function showError(msg) {
+        errorEl.textContent = msg;
+        errorEl.hidden = false;
+      }
+
+      input.addEventListener('input', () => {
+        input.value = input.value.replace(/\D/g, '').slice(0, 4);
+        errorEl.hidden = true;
+      });
+
+      async function verify() {
+        if (input.value.length !== 4) {
+          showError('4자리 숫자를 입력하세요.');
+          return;
+        }
+        if (!(window.crypto && window.crypto.subtle)) {
+          showError('이 브라우저 환경에서는 인증을 사용할 수 없습니다.');
+          return;
+        }
+        const hash = await sha256Hex(input.value);
+        if (hash === PIN_HASH) {
+          sessionStorage.setItem(SESSION_KEY, 'true');
+          goToApp();
+        } else {
+          showError('PIN 번호가 올바르지 않습니다.');
+          input.value = '';
+          input.focus();
+        }
+      }
+
+      submitBtn.addEventListener('click', verify);
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') verify();
+      });
+      input.focus();
+    }
+  </script>
 </body>
 </html>
