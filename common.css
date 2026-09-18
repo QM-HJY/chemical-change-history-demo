@@ -169,7 +169,7 @@ header {
 main { flex: 1; padding: 28px; min-width: 0; }
 
 /* ---------- 대시보드(1페이지) 3컬럼 ---------- */
-.columns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.columns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 
 @media (max-width: 1100px) {
   .columns { grid-template-columns: 1fr; }
@@ -249,7 +249,7 @@ main { flex: 1; padding: 28px; min-width: 0; }
 
 .more-btn:hover { background: #e9edf3; color: var(--text); }
 
-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; table-layout: fixed; }
 
 th, td {
   text-align: left;
@@ -269,6 +269,7 @@ tr:last-child td { border-bottom: none; }
 td.changed { color: #dc2626; font-weight: 700; }
 
 .chart-card svg { display: block; width: 100%; height: auto; }
+.chart-card .card-header { margin-bottom: 2px; }
 
 /* ---------- 조회 화면 (2/3/4페이지 공통) ---------- */
 .search-card {
