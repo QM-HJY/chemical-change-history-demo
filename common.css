@@ -475,3 +475,15 @@ td.changed { color: #dc2626; font-weight: 700; background: rgba(220, 38, 38, 0.0
 }
 .flag-original { color: var(--cas); background: var(--cas-bg); }
 .flag-changed { color: #dc2626; background: #fde8e8; }
+.badge-o { color: var(--material); background: var(--material-bg); }
+.badge-x { color: var(--text-muted); background: var(--bg); }
+
+.coming-soon-banner {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+}
