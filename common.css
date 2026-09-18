@@ -175,6 +175,32 @@ header {
 
 .sidebar a.active .nav-icon { opacity: 1; color: #5b9dff; }
 
+.sidebar .submenu {
+  display: flex;
+  flex-direction: column;
+  margin: -2px 12px 8px 34px;
+  padding-left: 12px;
+  border-left: 2px solid rgba(255, 255, 255, 0.14);
+}
+
+.sidebar .submenu a {
+  padding: 8px 10px;
+  margin: 2px 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.72);
+  border-radius: 8px;
+  border-left: none;
+}
+
+.sidebar .submenu a:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+
+.sidebar .submenu a.active {
+  color: #fff;
+  font-weight: 700;
+  background: rgba(91, 157, 255, 0.18);
+}
+
 main { flex: 1; padding: 28px; min-width: 0; }
 
 /* ---------- 대시보드(1페이지) 3컬럼 ---------- */

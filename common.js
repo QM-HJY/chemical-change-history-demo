@@ -49,6 +49,16 @@ function wireIconFallbacks() {
   });
 }
 
+// 아직 구축되지 않은 메뉴(서브메뉴 포함) 클릭 시 안내 알림
+function wireComingSoonLinks() {
+  document.querySelectorAll('a.coming-soon').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      alert(a.dataset.msg || '해당 페이지는 추후 구축 예정입니다.');
+    });
+  });
+}
+
 // CAS NO. 입력칸: 공백은 제거(자동 이어붙이기), 숫자/하이픈만 허용
 function wireCasNoInput(input) {
   if (!input) return;

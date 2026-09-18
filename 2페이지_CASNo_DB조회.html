@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CAS No. DB 조회</title>
-<link rel="stylesheet" href="common.css?v=20260918d">
+<link rel="stylesheet" href="common.css?v=20260918e">
 </head>
 <body>
   <div class="app-shell">
@@ -41,6 +41,10 @@
         <a href="2페이지_CASNo_DB조회.html" class="active">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6"/><path d="M10 3v6l-5.5 9.5A1.5 1.5 0 0 0 5.8 21h12.4a1.5 1.5 0 0 0 1.3-2.5L14 9V3"/></svg></span>CAS No. DB 조회
         </a>
+        <div class="submenu">
+          <a href="2페이지_CASNo_DB조회.html" class="active">CAS No. 변경 이력</a>
+          <a href="#" class="coming-soon" data-msg="CAS No. 상세 정보 페이지는 추후 구축 예정입니다.">CAS No. 상세 정보</a>
+        </div>
         <a href="3페이지_재료_DB조회.html">
           <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8 12 3 3 8l9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></span>재료 DB 조회
         </a>
@@ -104,7 +108,7 @@
     </div>
   </div>
 
-  <script src="common.js?v=20260918d"></script>
+  <script src="common.js?v=20260918e"></script>
   <script>
     // ---------- Mock 데이터: cas / name / registered(등록일자) / changed(변경일자, 없으면 '') ----------
     const CAS_DATA = [
@@ -133,6 +137,8 @@
       { cas: '7664-38-2', name: '인산', registered: '2016-12-12', changed: '' },
       { cas: '8001-79-4', name: '피마자유', registered: '2020-05-28', changed: '2025-10-08' }
     ];
+
+    wireComingSoonLinks();
 
     const casInput = document.getElementById('f-casno');
     wireCasNoInput(casInput);
