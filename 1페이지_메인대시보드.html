@@ -249,7 +249,7 @@
         </div>
 
         <div class="card chart-card">
-          <div class="card-header"><h3>월 누적 ${db.shortName} 변경이력</h3></div>
+          <div class="card-header"><h3>[${todayYear}년] 월 누적 ${db.shortName} 변경 이력</h3></div>
           ${comboChartSvg(monthlyAggregate(rows), COLOR_MAP[db.key])}
         </div>
       `;

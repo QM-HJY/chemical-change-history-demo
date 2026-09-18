@@ -84,18 +84,20 @@
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-header">
-            <h3>CAS No. DB 조회 결과</h3>
-          </div>
-          <div class="result-count" id="result-count"></div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr><th>CAS NO.</th><th>기존</th><th>등록일자</th><th>변경</th><th>변경일자</th><th>상세조회</th></tr>
-              </thead>
-              <tbody id="result-body"></tbody>
-            </table>
+        <div class="card result-card">
+          <div class="result-inner">
+            <div class="card-header">
+              <h3>CAS No. DB 조회 결과</h3>
+              <div class="result-stats" id="result-count"></div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>CAS NO.</th><th>기존</th><th>등록일자</th><th>변경</th><th>변경일자</th><th>상세조회</th></tr>
+                </thead>
+                <tbody id="result-body"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </main>
@@ -137,7 +139,12 @@
 
     function render(rows) {
       const tbody = document.getElementById('result-body');
-      document.getElementById('result-count').textContent = `총 ${rows.length}건`;
+      const changedCount = rows.filter(r => r.changed).length;
+      document.getElementById('result-count').innerHTML = `
+        <div class="stat-block"><span class="stat-label">변경</span><span class="stat-value stat-changed">${changedCount}건</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat-block"><span class="stat-label">전체</span><span class="stat-value">${rows.length}건</span></div>
+      `;
       tbody.innerHTML = rows.map(r => `
         <tr>
           <td><span class="cas-code">${r.cas}</span></td>
@@ -177,11 +184,11 @@
           && (!chgTo || r.changed <= chgTo));
       }
 
-      // 정렬: 변경 모드는 최신 변경일자가 상단, 그 외(전체/동일)는 최신 등록일자가 상단
-      if (mode === 'changed') {
-        rows.sort((a, b) => (a.changed < b.changed ? 1 : -1));
-      } else {
+      // 정렬: 동일 모드(변경일자 없음)만 최신 등록일자가 상단, 그 외(전체/변경)는 최신 변경일자가 상단
+      if (mode === 'same') {
         rows.sort((a, b) => (a.registered < b.registered ? 1 : -1));
+      } else {
+        rows.sort((a, b) => (a.changed < b.changed ? 1 : -1));
       }
 
       render(rows);
