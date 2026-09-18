@@ -4,7 +4,7 @@
 |---|---|
 | 제작자 | 품질경영팀 허재영 프로 |
 | 명칭 | 화학물질 변경이력 조회 |
-| URL | 확인 필요 — 로컬 실행 가능(`index.html` 또는 `1페이지_메인대시보드.html`). 프로젝트에 `.vercel` 폴더와 `vercel-qr.png`가 있어 Vercel 배포를 시도한 흔적은 있으나, PRD 문서(8.1)에는 GitHub Pages 기준으로 기술되어 있어 실제 배포 주소·플랫폼은 대화 내용만으로 확정 불가 |
+| URL | https://chemical-change-history-demo.vercel.app (Vercel 배포, 확인됨) — 로컬 실행도 가능(`index.html` 또는 `1페이지_메인대시보드.html`) |
 | 주요기능 | 1) 변경이력 조회 메인 대시보드 — CAS No./재료/제품 3종 DB의 일일·월간·연간 변경 현황, 최근 10건 표, 월별 누적 히스토그램(완성) <br>2) CAS No. DB 조회 — 조건별 검색(CAS NO./등록일자/변경일자/조회구분) 및 결과 표(1차 구현 완료) <br>3) (미완성) 재료 DB 조회(3페이지), 제품 DB 조회(4페이지) — 메뉴만 존재, 클릭 시 "추후 구축 예정" 안내만 표시 |
 | 사용대상 | 연구 및 품질부문 |
 | 비고 | 아래 참고 |
@@ -14,11 +14,12 @@
 **제작/개발**
 - 제작에 사용한 AI 도구: Claude Code (Claude Sonnet 5) — git 커밋에 "Co-Authored-By: Claude Sonnet 5" 기록
 - 개발 기술: HTML/CSS/JavaScript(바닐라), 외부 프레임워크·차트 라이브러리 미사용. 히스토그램은 외부 라이브러리(Chart.js) 대신 순수 SVG로 직접 구현(사내망 등 오프라인 환경에서도 렌더링되도록 하기 위함)
+- 폰트: Pretendard(오픈소스, OFL 라이선스) 적용. CDN 대신 폰트 파일을 `fonts/` 폴더에 내려받아 저장소에 포함(자체 호스팅) — 오프라인/사내망에서도 동일하게 보이도록 하기 위함, 라이선스 원문은 `fonts/LICENSE.txt`에 포함
 - 데이터 저장 방식: 별도 DB/서버 없음. 화면에 보이는 데이터는 JS 코드 안에 하드코딩된 Mock(예시) 데이터
 
 **실행 방법**
 - 실행: `index.html` 또는 `1페이지_메인대시보드.html`을 브라우저로 열면 바로 동작(별도 설치·서버 불필요)
-- 필요 파일: `common.css`, `common.js`가 같은 폴더에 있어야 함. `logo.png`, `user-photo.png`, `icon-daily/monthly/yearly.png`는 있으면 자동 적용, 없어도 기본값(이니셜/텍스트)으로 대체되어 정상 동작
+- 필요 파일: `common.css`, `common.js`, `fonts/PretendardVariable.woff2`가 같은 폴더 구조로 있어야 함. `logo.png`, `user-photo.png`, `icon-daily/monthly/yearly.png`는 있으면 자동 적용, 없어도 기본값(이니셜/텍스트)으로 대체되어 정상 동작
 - 인터넷/외부 서비스 연결: 불필요. CDN·외부 API 호출 없이 로컬 파일만으로 완전히 동작하도록 설계됨
 
 **서비스 자체의 AI 사용 여부**
