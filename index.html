@@ -107,7 +107,7 @@
       return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    if (sessionStorage.getItem(SESSION_KEY) === 'true') {
+    if (localStorage.getItem(SESSION_KEY) === 'true') {
       goToApp();
     } else {
       const input = document.getElementById('pin-input');
@@ -135,7 +135,7 @@
         }
         const hash = await sha256Hex(input.value);
         if (hash === PIN_HASH) {
-          sessionStorage.setItem(SESSION_KEY, 'true');
+          localStorage.setItem(SESSION_KEY, 'true');
           goToApp();
         } else {
           showError('PIN 번호가 올바르지 않습니다.');
